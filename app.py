@@ -2,9 +2,16 @@ from flask import Flask, render_template, request, jsonify
 import json
 import os
 import threading
-from nick_generator import generate_and_check_async, get_log_buffer  # mantenha se precisar
+from nick_generator import (
+    generate_and_check_async,
+    get_log_buffer,
+    stop_generation,
+    generation_status
+)
 
 app = Flask(__name__)
+
+# ------------------- Funções auxiliares -------------------
 
 def load_saved_nicks():
     try:
@@ -19,6 +26,8 @@ def save_nick(nick):
         nicks.append(nick)
         with open('saved_nicks.json', 'w') as file:
             json.dump(nicks, file)
+
+# ------------------- Rotas principais ---------------------
 
 @app.route('/')
 def home():
@@ -36,9 +45,20 @@ def generate():
     thread.start()
     return jsonify({"status": "started"})
 
+@app.route('/stop', methods=['POST'])
+def stop():
+    stop_generation()
+    return jsonify({"status": "stopping"})
+
+@app.route('/status')
+def status():
+    return jsonify({"generating": generation_status()})
+
 @app.route('/log-stream')
 def log_stream():
     return get_log_buffer()
+
+# ------------------- Inicializador ---------------------
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
