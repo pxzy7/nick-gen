@@ -1,31 +1,37 @@
-from flask import Flask, render_template, request, jsonify, send_file
-import threading
+from flask import Flask, render_template, request, jsonify
+import json
 import os
-from nick_generator import generate_and_check_async, get_latest_output_file, get_log_buffer
+import threading
+import time
+from your_generator_module import generate_and_check_async, get_log_buffer  # ajuste isso se necessário
 
 app = Flask(__name__)
 
 @app.route('/')
-def index():
+def home():
     return render_template('index.html')
 
 @app.route('/generate', methods=['POST'])
 def generate():
-    data = request.json
+    data = request.get_json()
     thread = threading.Thread(target=generate_and_check_async, args=(data,))
     thread.start()
     return jsonify({"status": "started"})
 
-@app.route('/latest-nicks')
-def latest_nicks():
-    file_path = get_latest_output_file()
-    if os.path.exists(file_path):
-        return send_file(file_path, as_attachment=False)
-    return "No file found", 404
-
 @app.route('/log-stream')
 def log_stream():
-    return get_log_buffer(), 200, {'Content-Type': 'text/plain'}
+    return get_log_buffer()
+
+# Se quiser rota pra ver os nicks salvos
+@app.route('/saved-nicks')
+def saved_nicks():
+    try:
+        with open("nicks_log.json", "r") as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        data = []
+    return jsonify(data)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=6942)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
