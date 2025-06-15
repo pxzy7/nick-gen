@@ -4,14 +4,30 @@
   <meta charset="UTF-8">
   <title>Minecraft Nick Generator</title>
   <link rel="stylesheet" href="/static/style.css">
+  <style>
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .controls button {
+      flex: 1;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>Nick Generator</h1>
     <form id="nick-form">
-      <label>Number of Nicks (1-15): <input type="number" name="amount" min="1" max="15" required></label>
-      <label>Nick Length (4-16): <input type="number" name="length" min="4" max="16" required></label>
-      <label>First Letter (optional): <input type="text" name="first_letter" maxlength="1"></label>
+      <label>Number of Nicks (1-15):
+        <input type="number" name="amount" min="1" max="15" required>
+      </label>
+      <label>Nick Length (4-16):
+        <input type="number" name="length" min="4" max="16" required>
+      </label>
+      <label>First Letter (optional):
+        <input type="text" name="first_letter" maxlength="1">
+      </label>
 
       <label>Character Set:</label>
       <div class="radio-group">
@@ -23,7 +39,10 @@
       </div>
 
       <label><input type="checkbox" name="underscore"> Include random underscore</label>
-      <button type="submit">Start Generating</button>
+      <div class="controls">
+        <button type="submit">Start Generating</button>
+        <button type="button" id="stop-btn">Stop</button>
+      </div>
     </form>
 
     <div id="log" class="log-output"></div>
@@ -31,6 +50,7 @@
 <script>
   const form = document.getElementById('nick-form');
   const log = document.getElementById('log');
+  const stopBtn = document.getElementById('stop-btn');
   let intervalId = null;
 
   form.onsubmit = async (e) => {
@@ -61,6 +81,14 @@
       log.innerText = text;
       log.scrollTop = log.scrollHeight;
     }, 1000);
+  };
+
+  stopBtn.onclick = () => {
+    if (intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
+      log.innerHTML += "\nStopped by user.";
+    }
   };
 </script>
 </body>
