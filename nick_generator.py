@@ -66,7 +66,7 @@ def check_mush(nick):
         return False
 
 def generate_and_check_async(data):
-    global seen_nicks, log_buffer, is_generating, stop_flag
+    global is_generating, stop_flag, seen_nicks, log_buffer
     is_generating = True
     stop_flag = False
     seen_nicks = set()
@@ -96,7 +96,7 @@ def generate_and_check_async(data):
 
     def worker():
         nonlocal generated, attempts
-        while generated < amount and attempts < max_attempts and not stop_flag:
+        while generated < amount and attempts < max_attempts:
             attempts += 1
             nick = generate_nick(length, first_letter, charset, use_underscore)
             if nick in seen_nicks:
@@ -137,13 +137,8 @@ def get_latest_output_file():
     ]
     arquivos_existentes = [f for f in arquivos if os.path.exists(f)]
     if not arquivos_existentes:
-        return "valid_nicks_letters.txt"
+        return "valid_nicks_letters.txt"  # fallback
     return max(arquivos_existentes, key=os.path.getmtime)
-
-# 👇 novas funções pra controle de estado
-def stop_generation():
-    global stop_flag
-    stop_flag = True
 
 def generation_status():
     return is_generating
