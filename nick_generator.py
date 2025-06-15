@@ -5,6 +5,9 @@ import requests
 import threading
 import os
 
+# NOVAS FLAGS DE CONTROLE
+is_generating = False
+stop_flag = False
 seen_nicks = set()
 log_buffer = []
 
@@ -63,15 +66,18 @@ def check_mush(nick):
         return False
 
 def generate_and_check_async(data):
+    global seen_nicks, log_buffer, is_generating, stop_flag
+    is_generating = True
+    stop_flag = False
+    seen_nicks = set()
+    log_buffer = []
+
     length = int(data.get("length", 4))
     amount = int(data.get("amount", 5))
     first_letter = data.get("first_letter", "")
     charset = data.get("charset", "letters")
     use_underscore = data.get("underscore", False)
 
-    global seen_nicks, log_buffer
-    seen_nicks = set()
-    log_buffer = []
     generated = 0
     attempts = 0
     max_attempts = 100000 if charset == "mojang_random3" else 1000
@@ -90,7 +96,7 @@ def generate_and_check_async(data):
 
     def worker():
         nonlocal generated, attempts
-        while generated < amount and attempts < max_attempts:
+        while generated < amount and attempts < max_attempts and not stop_flag:
             attempts += 1
             nick = generate_nick(length, first_letter, charset, use_underscore)
             if nick in seen_nicks:
@@ -116,6 +122,8 @@ def generate_and_check_async(data):
     for t in threads:
         t.join()
 
+    is_generating = False
+
 def get_log_buffer():
     return "\n".join(log_buffer)
 
@@ -129,5 +137,13 @@ def get_latest_output_file():
     ]
     arquivos_existentes = [f for f in arquivos if os.path.exists(f)]
     if not arquivos_existentes:
-        return "valid_nicks_letters.txt"  # fallback
+        return "valid_nicks_letters.txt"
     return max(arquivos_existentes, key=os.path.getmtime)
+
+# 👇 novas funções pra controle de estado
+def stop_generation():
+    global stop_flag
+    stop_flag = True
+
+def generation_status():
+    return is_generating
