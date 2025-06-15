@@ -50,8 +50,16 @@
 <script>
   const form = document.getElementById('nick-form');
   const log = document.getElementById('log');
-  const stopBtn = document.getElementById('stop-btn');
+  const stopButton = document.getElementById('stop-button');
   let intervalId = null;
+
+  async function checkStatus() {
+    const res = await fetch('/status');
+    const { generating } = await res.json();
+    if (!generating) {
+      clearInterval(intervalId);
+    }
+  }
 
   form.onsubmit = async (e) => {
     e.preventDefault();
@@ -80,15 +88,14 @@
       const text = await res.text();
       log.innerText = text;
       log.scrollTop = log.scrollHeight;
+      await checkStatus();
     }, 1000);
   };
 
-  stopBtn.onclick = () => {
-    if (intervalId) {
-      clearInterval(intervalId);
-      intervalId = null;
-      log.innerHTML += "\nStopped by user.";
-    }
+  stopButton.onclick = async () => {
+    await fetch('/stop', { method: 'POST' });
+    clearInterval(intervalId);
+    log.innerText += "\n🛑 Generation stopped by user.";
   };
 </script>
 </body>
