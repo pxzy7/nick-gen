@@ -1,0 +1,80 @@
+body {
+  background-color: #0a0a0a;
+  color: #ff4d4d;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  background-color: #1a0000;
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px solid #ff1a1a;
+  box-shadow: 0 0 20px #ff1a1a88;
+}
+
+h1 {
+  text-align: center;
+  color: #ff1a1a;
+  text-shadow: 1px 1px 5px #ff0000;
+}
+
+label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  background-color: #000000;
+  color: #ff3333;
+  border: 1px solid #ff1a1a;
+  border-radius: 5px;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+input[type="text"]::placeholder,
+input[type="number"]::placeholder {
+  color: #ff8080;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #cc0000;
+  color: #fff;
+  border: 2px solid #ff1a1a;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  box-shadow: 0 0 10px #ff1a1a77;
+}
+
+button:hover {
+  background-color: #ff1a1a;
+  box-shadow: 0 0 20px #ff4d4d;
+}
+
+.radio-group label {
+  display: inline-block;
+  margin-right: 15px;
+}
+
+.log-output {
+  background-color: #0d0d0d;
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 5px;
+  font-family: monospace;
+  color: #ff4d4d;
+  white-space: pre-wrap;
+  border: 1px solid #ff1a1a;
+  box-shadow: 0 0 10px #ff1a1a55;
+}

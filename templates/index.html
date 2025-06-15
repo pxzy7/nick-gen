@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Minecraft Nick Generator</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Nick Generator</h1>
+    <form id="nick-form">
+      <label>Number of Nicks (1-15): <input type="number" name="amount" min="1" max="15" required></label>
+      <label>Nick Length (4-16): <input type="number" name="length" min="4" max="16" required></label>
+      <label>First Letter (optional): <input type="text" name="first_letter" maxlength="1"></label>
+
+      <label>Character Set:</label>
+      <div class="radio-group">
+        <label><input type="radio" name="charset" value="letters" checked> Letters</label>
+        <label><input type="radio" name="charset" value="digits"> Digits</label>
+        <label><input type="radio" name="charset" value="letters_digits"> Letters + Digits</label>
+        <label><input type="radio" name="charset" value="all"> All</label>
+        <label><input type="radio" name="charset" value="mojang_random3"> Mojang Random 3</label>
+      </div>
+
+      <label><input type="checkbox" name="underscore"> Include random underscore</label>
+      <button type="submit">Start Generating</button>
+    </form>
+
+    <div id="log" class="log-output"></div>
+  </div>
+<script>
+  const form = document.getElementById('nick-form');
+  const log = document.getElementById('log');
+  let intervalId = null;
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    log.innerHTML = "Starting generation...\n";
+
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((value, key) => {
+      if (key === 'underscore') {
+        data[key] = true;
+      } else {
+        data[key] = value;
+      }
+    });
+    if (!data.hasOwnProperty('underscore')) data['underscore'] = false;
+
+    await fetch('/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (intervalId) clearInterval(intervalId);
+    intervalId = setInterval(async () => {
+      const res = await fetch('/log-stream');
+      const text = await res.text();
+      log.innerText = text;
+      log.scrollTop = log.scrollHeight;
+    }, 1000);
+  };
+</script>
+</body>
+</html>
