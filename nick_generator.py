@@ -7,7 +7,6 @@ import os
 
 # NOVAS FLAGS DE CONTROLE
 is_generating = False
-stop_flag = False
 seen_nicks = set()
 log_buffer = []
 
@@ -54,9 +53,8 @@ def check_mush(nick):
         return False
 
 def generate_and_check_async(data):
-    global is_generating, stop_flag, seen_nicks, log_buffer
+    global is_generating, seen_nicks, log_buffer
     is_generating = True
-    stop_flag = False
     seen_nicks = set()
     log_buffer = []
 
@@ -102,7 +100,7 @@ def generate_and_check_async(data):
 
             time.sleep(0.3)
 
-    threads = [threading.Thread(target=worker) for _ in range(1)]
+    threads = [threading.Thread(target=worker)]
     for t in threads:
         t.start()
     for t in threads:
