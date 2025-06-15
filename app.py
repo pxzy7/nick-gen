@@ -2,14 +2,32 @@ from flask import Flask, render_template, request, jsonify
 import json
 import os
 import threading
-import time
-from nick_generator import generate_and_check_async, get_log_buffer  # ajuste isso se necessário
+from nick_generator import generate_and_check_async, get_log_buffer  # mantenha se precisar
 
 app = Flask(__name__)
+
+def load_saved_nicks():
+    try:
+        with open('saved_nicks.json', 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return []
+
+def save_nick(nick):
+    nicks = load_saved_nicks()
+    if nick not in nicks:
+        nicks.append(nick)
+        with open('saved_nicks.json', 'w') as file:
+            json.dump(nicks, file)
 
 @app.route('/')
 def home():
     return render_template('index.html')
+
+@app.route('/saved-nicks')
+def saved_nicks():
+    nicks = load_saved_nicks()
+    return render_template('saved_nicks.html', nicks=nicks)
 
 @app.route('/generate', methods=['POST'])
 def generate():
@@ -21,16 +39,6 @@ def generate():
 @app.route('/log-stream')
 def log_stream():
     return get_log_buffer()
-
-# Se quiser rota pra ver os nicks salvos
-@app.route('/saved-nicks')
-def saved_nicks():
-    try:
-        with open("nicks_log.json", "r") as f:
-            data = json.load(f)
-    except FileNotFoundError:
-        data = []
-    return jsonify(data)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
