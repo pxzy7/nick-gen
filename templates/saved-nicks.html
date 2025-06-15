@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Apelidos Salvos</title>
+</head>
+<body>
+    <h1>Apelidos Criados</h1>
+    <ul>
+        {% for nick in nicks %}
+            <li>{{ nick }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
