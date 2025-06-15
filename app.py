@@ -49,10 +49,11 @@ def generate():
 def stop():
     stop_generation()
     return jsonify({"status": "stopping"})
-
+    
 @app.route('/status')
 def status():
-    return jsonify({"generating": generation_status()})
+    from nick_generator import generation_status
+    return jsonify({"is_generating": generation_status()})
 
 @app.route('/log-stream')
 def log_stream():
