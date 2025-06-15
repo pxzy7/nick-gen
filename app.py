@@ -3,7 +3,7 @@ import json
 import os
 import threading
 import time
-from your_generator_module import generate_and_check_async, get_log_buffer  # ajuste isso se necessário
+from nick_generator import generate_and_check_async, get_log_buffer  # ajuste isso se necessário
 
 app = Flask(__name__)
 
